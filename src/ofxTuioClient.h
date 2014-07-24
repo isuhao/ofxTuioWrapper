@@ -68,7 +68,7 @@ public:
 	
 	void setVerbose(bool b);
 	
-	//OF POCO EVENTS TO FORWARD TUIO EVENTS TO testApp or any other Class
+	//OF POCO EVENTS TO FORWARD TUIO EVENTS TO ofApp or any other Class
 	
 	ofEvent<TuioObject> objectAdded;
 	ofEvent<TuioObject> objectRemoved;

@@ -1,11 +1,10 @@
-#ifndef _TEST_APP
-#define _TEST_APP
+#pragma once
 
 #include "ofMain.h"
-#include "ofxTuioClient.h"
+#include "ofxTuioServer.h"
 
 
-class testApp : public ofBaseApp{
+class ofApp : public ofBaseApp{
 	
 public:
 	void setup();
@@ -20,12 +19,4 @@ public:
 	void mouseReleased(int x, int y, int button);
 	void windowResized(int w, int h);
 	
-	ofxTuioClient myTuio;
-	
-	void touchDown(ofTouchEventArgs & touch);
-	void touchUp(ofTouchEventArgs & touch);
-	void touchMoved(ofTouchEventArgs & touch);
-	
 };
-
-#endif

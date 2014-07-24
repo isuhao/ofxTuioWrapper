@@ -1,10 +1,10 @@
-#include "testApp.h"
+#include "ofApp.h"
 
 ofxTuioServer myTuioServer;
 TuioCursor * cursor;
 
 //--------------------------------------------------------------
-void testApp::setup(){
+void ofApp::setup(){
 	ofBackground(200, 200, 200);
 	ofSetVerticalSync(false);
 
@@ -14,47 +14,47 @@ void testApp::setup(){
 }
 
 //--------------------------------------------------------------
-void testApp::update(){
+void ofApp::update(){
 	//send the OSC messages
 	myTuioServer.run();
 }
 
 //--------------------------------------------------------------
-void testApp::draw(){
+void ofApp::draw(){
 	
 }
 
 //--------------------------------------------------------------
-void testApp::keyPressed(int key){
+void ofApp::keyPressed(int key){
 
 }
 
 //--------------------------------------------------------------
-void testApp::keyReleased(int key){
+void ofApp::keyReleased(int key){
 
 }
 
 //--------------------------------------------------------------
-void testApp::mouseMoved(int x, int y ){
+void ofApp::mouseMoved(int x, int y ){
 
 }
 
 //--------------------------------------------------------------
-void testApp::mousePressed(int x, int y, int button){
+void ofApp::mousePressed(int x, int y, int button){
 	cursor = myTuioServer.addCursor(x,y);
 }
 
 //--------------------------------------------------------------
-void testApp::mouseDragged(int x, int y, int button){
+void ofApp::mouseDragged(int x, int y, int button){
 	myTuioServer.updateCursor(cursor,x,y);
 }
 
 //--------------------------------------------------------------
-void testApp::mouseReleased(int x, int y, int button){
+void ofApp::mouseReleased(int x, int y, int button){
 	myTuioServer.removeCursor(cursor);
 }
 
 //--------------------------------------------------------------
-void testApp::windowResized(int w, int h){
+void ofApp::windowResized(int w, int h){
 
 }

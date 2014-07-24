@@ -1,7 +1,7 @@
-#include "testApp.h"
+#include "ofApp.h"
 
 //--------------------------------------------------------------
-void testApp::setup(){
+void ofApp::setup(){
 	ofBackground(200, 200, 200);
 	ofSetVerticalSync(true);
 	
@@ -9,18 +9,18 @@ void testApp::setup(){
 	myTuio.connect(3333);
 	
 	//Assign Global TUIO Callback Functions
-	ofAddListener(ofEvents().touchDown,this,&testApp::touchDown);
-	ofAddListener(ofEvents().touchUp,this,&testApp::touchUp);
-	ofAddListener(ofEvents().touchMoved,this,&testApp::touchMoved);
+	ofAddListener(ofEvents().touchDown,this,&ofApp::touchDown);
+	ofAddListener(ofEvents().touchUp,this,&ofApp::touchUp);
+	ofAddListener(ofEvents().touchMoved,this,&ofApp::touchMoved);
 }
 
 //--------------------------------------------------------------
-void testApp::update(){
+void ofApp::update(){
 
 }
 
 //--------------------------------------------------------------
-void testApp::draw(){
+void ofApp::draw(){
 	
 	//render TUIO Cursors and Objects
 	myTuio.drawCursors();
@@ -28,42 +28,42 @@ void testApp::draw(){
 }
 
 //--------------------------------------------------------------
-void testApp::keyPressed(int key){
+void ofApp::keyPressed(int key){
 
 }
 
 //--------------------------------------------------------------
-void testApp::keyReleased(int key){
+void ofApp::keyReleased(int key){
 
 }
 
 //--------------------------------------------------------------
-void testApp::mouseMoved(int x, int y ){
+void ofApp::mouseMoved(int x, int y ){
 
 }
 
 //--------------------------------------------------------------
-void testApp::mouseDragged(int x, int y, int button){
+void ofApp::mouseDragged(int x, int y, int button){
 
 }
 
 //--------------------------------------------------------------
-void testApp::mousePressed(int x, int y, int button){
+void ofApp::mousePressed(int x, int y, int button){
 
 }
 
 //--------------------------------------------------------------
-void testApp::mouseReleased(int x, int y, int button){
+void ofApp::mouseReleased(int x, int y, int button){
 
 }
 
 //--------------------------------------------------------------
-void testApp::windowResized(int w, int h){
+void ofApp::windowResized(int w, int h){
 
 }
 
 
-void testApp::touchDown(ofTouchEventArgs & touch){
+void ofApp::touchDown(ofTouchEventArgs & touch){
 	cout << " cursor added: " + ofToString(touch.id)+
 	" X: "+ofToString(touch.x)+
 	" Y: "+ofToString(touch.y)
@@ -72,7 +72,7 @@ void testApp::touchDown(ofTouchEventArgs & touch){
 	
 }
 
-void testApp::touchUp(ofTouchEventArgs & touch){
+void ofApp::touchUp(ofTouchEventArgs & touch){
 	cout << " cursor removed: " + ofToString(touch.id)+
 	 " X: "+ofToString(touch.x)+
 	 " Y: "+ofToString(touch.y)
@@ -80,7 +80,7 @@ void testApp::touchUp(ofTouchEventArgs & touch){
 	
 }
 
-void testApp::touchMoved(ofTouchEventArgs & touch){
+void ofApp::touchMoved(ofTouchEventArgs & touch){
 	cout << " cursor updated: " + ofToString(touch.id)+
 	 " X: "+ofToString(touch.x)+
 	 " Y: "+ofToString(touch.y)
