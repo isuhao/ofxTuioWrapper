@@ -1,113 +1,77 @@
 /*
- TUIO Server Component - part of the reacTIVision project
- http://reactivision.sourceforge.net/
+ TUIO C++ Library
+ Copyright (c) 2005-2014 Martin Kaltenbrunner <martin@tuio.org>
  
- Copyright (c) 2005-2009 Martin Kaltenbrunner <mkalten@iua.upf.edu>
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 3.0 of the License, or (at your option) any later version.
  
- This program is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
- 
- This program is distributed in the hope that it will be useful,
+ This library is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ Lesser General Public License for more details.
  
- You should have received a copy of the GNU General Public License
- along with this program; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library.
+*/
 
-#ifndef INCLUDED_TuioServer_H
-#define INCLUDED_TuioServer_H
+#ifndef INCLUDED_TUIOMANAGER_H
+#define INCLUDED_TUIOMANAGER_H
 
-#ifndef WIN32
-#include <pthread.h>
-#include <sys/time.h>
-#else
-#include <windows.h>
-#endif
+#include "TuioDispatcher.h"
 
 #include <iostream>
 #include <list>
 #include <algorithm>
 
-#include "osc/OscOutboundPacketStream.h"
-#include "ip/NetworkingUtils.h"
-#include "ip/UdpSocket.h"
-
-#include "TuioObject.h"
-#include "TuioCursor.h"
-
-#define IP_MTU_SIZE 1500
-#define MAX_UDP_SIZE 65536
-#define MIN_UDP_SIZE 576
-#define OBJ_MESSAGE_SIZE 108	// setMessage + seqMessage size
+#define OBJ_MESSAGE_SIZE 108	// setMessage + fseqMessage size
 #define CUR_MESSAGE_SIZE 88
+#define BLB_MESSAGE_SIZE 116
 
 namespace TUIO {
 	/**
-	 * <p>The TuioServer class is the central TUIO protocol encoder component.
-	 * In order to encode and send TUIO messages an instance of TuioServer needs to be created. The TuioServer instance then generates TUIO messaged
-	 * which are sent via OSC over UDP to the configured IP address and port.</p> 
+	 * <p>The TuioManager class is the central TUIO session management component.</p> 
 	 * <p>During runtime the each frame is marked with the initFrame and commitFrame methods, 
 	 * while the currently present TuioObjects are managed by the server with ADD, UPDATE and REMOVE methods in analogy to the TuioClient's TuioListener interface.</p> 
 	 * <p><code>
-	 * TuioClient *server = new TuioServer();<br/>
+	 * TuioManager *manager = new TuioManager();<br/>
 	 * ...<br/>
 	 * server->initFrame(TuioTime::getSessionTime());<br/>
 	 * TuioObject *tobj = server->addTuioObject(xpos,ypos, angle);<br/>
 	 * TuioCursor *tcur = server->addTuioObject(xpos,ypos);<br/>
+	 * TuioBlob *tblb = server->addTuioBlob(xpos,ypos,width,height,angle);<br/>
 	 * server->commitFrame();<br/>
 	 * ...<br/>
 	 * server->initFrame(TuioTime::getSessionTime());<br/>
 	 * server->updateTuioObject(tobj, xpos,ypos, angle);<br/>
 	 * server->updateTuioCursor(tcur, xpos,ypos);<br/>
+	 * server->updateTuioBlob(tblb, xpos,ypos,width,height,angle);<br/>
 	 * server->commitFrame();<br/>
 	 * ...<br/>
 	 * server->initFrame(TuioTime::getSessionTime());<br/>
 	 * server->removeTuioObject(tobj);<br/>
 	 * server->removeTuioCursor(tcur);<br/>
+	 * server->removeTuioBlob(tblb);<br/>
 	 * server->commitFrame();<br/>
 	 * </code></p>
 	 *
 	 * @author Martin Kaltenbrunner
-	 * @version 1.4
+	 * @version 1.1.5
 	 */ 
-	class TuioServer { 
-		
+	class LIBDECL TuioManager : public TuioDispatcher { 
+	
 	public:
 
 		/**
-		 * The default constructor creates a TuioServer that sends to the default TUIO port 3333 on localhost
-		 * using the maximum packet size of 65536 bytes to use single packets on the loopback device
+		 * The default constructor creates a TuioManager
 		 */
-		TuioServer();
-
-		/**
-		 * This constructor creates a TuioServer that sends to the provided port on the the given host
-		 * using a default packet size of 1492 bytes to deliver unfragmented UDP packets on a LAN
-		 *
-		 * @param  host  the receiving host name
-		 * @param  port  the outgoing TUIO UDP port number
-		 */
-		TuioServer(const char *host, int port);
-
-		/**
-		 * This constructor creates a TuioServer that sends to the provided port on the the given host
-		 * the packet UDP size can be set to a value between 576 and 65536 bytes
-		 *
-		 * @param  host  the receiving host name
-		 * @param  port  the outgoing TUIO UDP port number
-		 * @param  size  the maximum UDP packet size
-		 */
-		TuioServer(const char *host, int port, int size);
+		TuioManager();
 
 		/**
 		 * The destructor is doing nothing in particular. 
 		 */
-		~TuioServer();
+		~TuioManager();
 		
 		/**
 		 * Creates a new TuioObject based on the given arguments.
@@ -191,9 +155,9 @@ namespace TUIO {
 		void removeTuioCursor(TuioCursor *tcur);
 
 		/**
-		 * Updates an externally managed TuioCursor 
+		 * Adds an externally managed TuioCursor 
 		 *
-		 * @param	tcur	the TuioCursor to update
+		 * @param	tcur	the TuioCursor to add
 		 */
 		void addExternalTuioCursor(TuioCursor *tcur);
 
@@ -211,6 +175,64 @@ namespace TUIO {
 		 * @param	tcur	the TuioCursor to remove
 		 */
 		void removeExternalTuioCursor(TuioCursor *tcur);
+
+		/**
+		 * Creates a new TuioBlob based on the given arguments.
+		 * The new TuioBlob is added to the TuioServer's internal list of active TuioBlobs 
+		 * and a reference is returned to the caller.
+		 *
+		 * @param	xp	the X coordinate to assign
+		 * @param	yp	the Y coordinate to assign
+		 * @param	angle	the angle to assign
+		 * @param	width	the width to assign
+		 * @param	height	the height to assign
+		 * @param	area	the area to assign
+		 * @return	reference to the created TuioBlob
+		 */
+		TuioBlob* addTuioBlob(float xp, float yp, float angle, float width, float height, float area);
+		
+		/**
+		 * Updates the referenced TuioBlob based on the given arguments.
+		 *
+		 * @param	tblb	the TuioObject to update
+		 * @param	xp	the X coordinate to assign
+		 * @param	yp	the Y coordinate to assign
+		 * @param	angle	the angle to assign
+		 * @param	width	the width to assign
+		 * @param	height	the height to assign
+		 * @param	area	the area to assign
+		 */
+		void updateTuioBlob(TuioBlob *tblb, float xp, float yp, float angle, float width, float height, float area);
+		
+		/**
+		 * Removes the referenced TuioBlob from the TuioServer's internal list of TuioBlobs
+		 * and deletes the referenced TuioBlob afterwards
+		 *
+		 * @param	tblb	the TuioBlob to remove
+		 */
+		void removeTuioBlob(TuioBlob *tblb);
+		
+		/**
+		 * Updates an externally managed TuioBlob 
+		 *
+		 * @param	tblb	the TuioBlob to update
+		 */
+		void addExternalTuioBlob(TuioBlob *tblb);
+		
+		/**
+		 * Updates an externally managed TuioBlob 
+		 *
+		 * @param	tblb	the TuioBlob to update
+		 */
+		void updateExternalTuioBlob(TuioBlob *tblb);
+		
+		/**
+		 * Removes an externally managed TuioBlob from the TuioServer's internal list of TuioBlob
+		 * The referenced TuioBlob is not deleted
+		 *
+		 * @param	tblb	the TuioBlob to remove
+		 */
+		void removeExternalTuioBlob(TuioBlob *tblb);		
 		
 		/**
 		 * Initializes a new frame with the given TuioTime
@@ -242,54 +264,6 @@ namespace TUIO {
 		 * @return	the current frame ID for external use
 		 */
 		TuioTime getFrameTime();
-
-		/**
-		 * Generates and sends TUIO messages of all currently active TuioObjects and TuioCursors.
-		 */
-		void sendFullMessages();		
-
-		/**
-		 * Disables the periodic full update of all currently active TuioObjects and TuioCursors 
-		 *
-		 * @param	interval	update interval in seconds, defaults to one second
-		 */
-		void enablePeriodicMessages(int interval=1);
-
-		/**
-		 * Disables the periodic full update of all currently active and inactive TuioObjects and TuioCursors 
-		 */
-		void disablePeriodicMessages();
-
-		/**
-		 * Enables the full update of all currently active and inactive TuioObjects and TuioCursors 
-		 *
-		 */
-		void enableFullUpdate()  {
-			full_update = true;
-		}
-		
-		/**
-		 * Disables the full update of all currently active and inactive TuioObjects and TuioCursors 
-		 */
-		void disableFullUpdate() {
-			full_update = false;
-		}
-		
-		/**
-		 * Returns true if the periodic full update of all currently active TuioObjects and TuioCursors is enabled.
-		 * @return	true if the periodic full update of all currently active TuioObjects and TuioCursors is enabled
-		 */
-		bool periodicMessagesEnabled() {
-			return periodic_update;
-		}
-	
-		/**
-		 * Returns the periodic update interval in seconds.
-		 * @return	the periodic update interval in seconds
-		 */
-		int getUpdateInterval() {
-			return update_interval;
-		}
 		
 		/**
 		 * Returns a List of all currently inactive TuioObjects
@@ -304,6 +278,13 @@ namespace TUIO {
 		 * @return  a List of all currently inactive TuioCursors
 		 */
 		std::list<TuioCursor*> getUntouchedCursors();
+
+		/**
+		 * Returns a List of all currently inactive TuioBlobs
+		 *
+		 * @return  a List of all currently inactive TuioBlobs
+		 */
+		std::list<TuioBlob*> getUntouchedBlobs();
 		
 		/**
 		 * Calculates speed and acceleration values for all currently inactive TuioObjects
@@ -314,6 +295,11 @@ namespace TUIO {
 		 * Calculates speed and acceleration values for all currently inactive TuioCursors
 		 */
 		void stopUntouchedMovingCursors();
+
+		/**
+		 * Calculates speed and acceleration values for all currently inactive TuioBlobs
+		 */
+		void stopUntouchedMovingBlobs();
 		
 		/**
 		 * Removes all currently inactive TuioObjects from the TuioServer's internal list of TuioObjects
@@ -326,36 +312,10 @@ namespace TUIO {
 		void removeUntouchedStoppedCursors();
 
 		/**
-		 * Returns a List of all currently active TuioObjects
-		 *
-		 * @return  a List of all currently active TuioObjects
+		 * Removes all currently inactive TuioCursors from the TuioServer's internal list of TuioBlobs
 		 */
-		std::list<TuioObject*> getTuioObjects();
+		void removeUntouchedStoppedBlobs();
 		
-		
-		/**
-		 * Returns a List of all currently active TuioCursors
-		 *
-		 * @return  a List of all currently active TuioCursors
-		 */
-		std::list<TuioCursor*> getTuioCursors();
-		
-		/**
-		 * Returns the TuioObject corresponding to the provided Session ID
-		 * or NULL if the Session ID does not refer to an active TuioObject
-		 *
-		 * @return  an active TuioObject corresponding to the provided Session ID or NULL
-		 */
-		TuioObject* getTuioObject(long s_id);
-		
-		/**
-		 * Returns the TuioCursor corresponding to the provided Session ID
-		 * or NULL if the Session ID does not refer to an active TuioCursor
-		 *
-		 * @return  an active TuioCursor corresponding to the provided Session ID or NULL
-		 */
-		TuioCursor* getTuioCursor(long s_id);
-
 		/**
 		 * Returns the TuioObject closest to the provided coordinates
 		 * or NULL if there isn't any active TuioObject
@@ -371,63 +331,58 @@ namespace TUIO {
 		 * @return  the closest TuioCursor corresponding to the provided coordinates or NULL
 		 */
 		TuioCursor* getClosestTuioCursor(float xp, float yp);
-		
+
 		/**
-		 * Returns true if this TuioServer is currently connected.
-		 * @return	true if this TuioServer is currently connected
+		 * Returns the TuioBlob closest to the provided coordinates
+		 * or NULL if there isn't any active TuioBlob
+		 *
+		 * @return  the closest TuioBlob corresponding to the provided coordinates or NULL
 		 */
-		bool isConnected() { return connected; }
+		TuioBlob* getClosestTuioBlob(float xp, float yp);
 		
 		/**
 		 * The TuioServer prints verbose TUIO event messages to the console if set to true.
-		 * @param	verbose	verbose message output if set to true
+		 * @param	verbose	print verbose messages if set to true
 		 */
 		void setVerbose(bool verbose) { this->verbose=verbose; }
+
+		void setInversion(bool ix, bool iy, bool ia) { 
+			invert_x = ix; 
+			invert_y = iy; 
+			invert_a = ia; 
+		};
+
+		void setInvertXpos(bool ix) { invert_x = ix; };
+		void setInvertYpos(bool iy) { invert_y = iy; };
+		void setInvertAngle(bool ia) { invert_a = ia; };
+		bool getInvertXpos() { return invert_x; };
+		bool getInvertYpos() { return invert_y; };
+		bool getInvertAngle() { return invert_a; };
+		void resetTuioObjects();
+		void resetTuioCursors();		
+		void resetTuioBlobs();		
 		
-	private:
-		std::list<TuioObject*> objectList;
-		std::list<TuioCursor*> cursorList;
-		
-		int maxCursorID;
+	protected:
 		std::list<TuioCursor*> freeCursorList;
 		std::list<TuioCursor*> freeCursorBuffer;
-		
-		UdpTransmitSocket *socket;	
-		osc::OutboundPacketStream  *oscPacket;
-		char *oscBuffer; 
-		osc::OutboundPacketStream  *fullPacket;
-		char *fullBuffer; 
-		
-		void initialize(const char *host, int port, int size);
 
-		void sendEmptyCursorBundle();
-		void startCursorBundle();
-		void addCursorMessage(TuioCursor *tcur);
-		void sendCursorBundle(long fseq);
-		
-		void sendEmptyObjectBundle();
-		void startObjectBundle();
-		void addObjectMessage(TuioObject *tobj);
-		void sendObjectBundle(long fseq);
-		
-		bool full_update;
-		int update_interval;
-		bool periodic_update;
+		std::list<TuioBlob*> freeBlobList;
+		std::list<TuioBlob*> freeBlobBuffer;
 
-		long currentFrame;
 		TuioTime currentFrameTime;
-		bool updateObject, updateCursor;
-		long lastCursorUpdate, lastObjectUpdate;
-
+		long currentFrame;
+		int maxCursorID;
+		int maxBlobID;
 		long sessionID;
+
+		bool updateObject;
+		bool updateCursor;
+		bool updateBlob;
 		bool verbose;
 
-#ifndef WIN32
-		pthread_t thread;
-#else
-		HANDLE thread;
-#endif	
-		bool connected;
+		bool invert_x;
+		bool invert_y;
+		bool invert_a;
 	};
-};
-#endif /* INCLUDED_TuioServer_H */
+}
+#endif /* INCLUDED_TUIOMANAGER_H */
