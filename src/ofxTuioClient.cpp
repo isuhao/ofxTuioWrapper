@@ -141,7 +141,8 @@ void ofxTuioClient::addTuioCursor(TuioCursor *tcur) {
 	touch.x=tcur->getX();
 	touch.y=tcur->getY();
 	touch.id=tcur->getSessionID();
-	
+    touch.type=ofTouchEventArgs::down;
+    
 	if(bFlip){
 		touch.x = 1.f - touch.x;
 		touch.y = 1.f - touch.y;
@@ -160,7 +161,8 @@ void ofxTuioClient::updateTuioCursor(TuioCursor *tcur) {
 	touch.x=tcur->getX();
 	touch.y=tcur->getY();
 	touch.id=tcur->getSessionID();
-	
+    touch.type=ofTouchEventArgs::move;
+
 	if(bFlip){
 		touch.x = 1.f - touch.x;
 		touch.y = 1.f - touch.y;
@@ -179,6 +181,7 @@ void ofxTuioClient::removeTuioCursor(TuioCursor *tcur) {
 	touch.x=tcur->getX();
 	touch.y=tcur->getY();
 	touch.id=tcur->getSessionID();
+    touch.type=ofTouchEventArgs::up;
 	
 	if(bFlip){
 		touch.x = 1.f - touch.x;
