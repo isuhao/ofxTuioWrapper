@@ -96,10 +96,11 @@ void ofxTuioClient::drawObjects(){
 
 void ofxTuioClient::addTuioObject(TuioObject *tobj) {
 	
-	if(bFlip){
-		tobj->setX(1.f - tobj->getX());
-		tobj->setY(1.f - tobj->getY());
-	}
+    // TODO: Implement flip.
+//	if(bFlip){
+//		tobj->setX(1.f - tobj->getX());
+//		tobj->setY(1.f - tobj->getY());
+//	}
 	ofNotifyEvent(objectAdded, *tobj, this);
 	
 	if (bVerbose)
@@ -109,10 +110,11 @@ void ofxTuioClient::addTuioObject(TuioObject *tobj) {
 
 void ofxTuioClient::updateTuioObject(TuioObject *tobj) {
 	
-	if(bFlip){
-		tobj->setX(1.f - tobj->getX());
-		tobj->setY(1.f - tobj->getY());
-	}
+    // TODO: Implement flip.
+//    if(bFlip){
+//		tobj->setX(1.f - tobj->getX());
+//		tobj->setY(1.f - tobj->getY());
+//	}
 	ofNotifyEvent(objectUpdated, *tobj, this);
 	
 	if (bVerbose) 	
@@ -123,10 +125,11 @@ void ofxTuioClient::updateTuioObject(TuioObject *tobj) {
 
 void ofxTuioClient::removeTuioObject(TuioObject *tobj) {
 	
-	if(bFlip){
-		tobj->setX(1.f - tobj->getX());
-		tobj->setY(1.f - tobj->getY());
-	}
+    // TODO: Implement flip.
+//    if(bFlip){
+//		tobj->setX(1.f - tobj->getX());
+//		tobj->setY(1.f - tobj->getY());
+//	}
 	ofNotifyEvent(objectRemoved, *tobj, this);
 	
 	if (bVerbose)
